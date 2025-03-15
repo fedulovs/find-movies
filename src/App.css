@@ -1,0 +1,68 @@
+.page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.movies-container {
+    max-width: 70%;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    justify-items: center;
+}
+
+.movie-card {
+    width: 170px;
+    height: 340px;
+    background-color: var(--color-card);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.movie-poster-container {
+    width: 100%;
+    height: 80%;
+}
+
+.movie-poster-image {
+    width: 100%;
+    height: 100%;
+}
+
+.movie-details {
+    gap: 4px;
+    max-height: 20%;
+    font-size: 14px;
+    padding: 8px;
+    overflow: hidden;
+}
+
+.movie-title {
+    display: inline;
+    text-align: start;
+    font-weight: 700;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+.movie-type {
+    color: var(--color-font-secondary);
+    margin: 4px 0 0 0;
+}
+
+.favorite-button {
+    height: 30px;
+    position: absolute;
+    bottom: 7px;
+    right: 2px;
+    background-color: transparent;
+    border: none;
+    color: var(--color-star);
+    font-size: 30px;
+}
