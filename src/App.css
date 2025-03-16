@@ -6,6 +6,34 @@
     gap: 24px;
 }
 
+.search-container {
+    width: 100%;
+    height: auto;
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--color-card);
+}
+
+.search-input,
+.search-button {
+    max-height: 30px;
+}
+
+.search-input {
+    max-width: 600px;
+    flex-grow: 1;
+    padding: 4px;
+    border-radius: 6px;
+}
+
+.search-button {
+    cursor: pointer;
+    border-radius: 6px;
+}
+
 .movies-container {
     max-width: 70%;
     display: grid;
@@ -65,4 +93,8 @@
     border: none;
     color: var(--color-star);
     font-size: 30px;
+}
+
+.favorite-button:hover {
+    color: var(--color-star-hover);
 }
