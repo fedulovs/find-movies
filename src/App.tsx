@@ -11,9 +11,10 @@ interface Movie {
 }
 
 const App = () => {
-    const apiKey: string = '123';
+    const apiKey: string = '';
 
     const [movies, setMovies] = useState<Movie[]>([]);
+    const [favoriteMovies, setFavoriteMovies] = useState<Movie[]>([]);
     const [newSearch, setNewSearch] = useState<string>('');
 
     const fetchMovies = async (query: string) => {
@@ -40,17 +41,33 @@ const App = () => {
         fetchMovies(newSearch);
     };
 
+    const favoriteTheMovie = (index: number) => {
+        const selectedMovie = movies[index];
+        const alreadyFavorited = favoriteMovies.some(
+            (movie) => movie.imdbID === selectedMovie.imdbID
+        );
+
+        if (!alreadyFavorited) {
+            setFavoriteMovies((prevFavorites) => [
+                ...prevFavorites,
+                selectedMovie,
+            ]);
+        } else {
+            console.log('Movie already in favorites');
+        }
+    };
+
     return (
         <div className='page-container'>
-            <div className='input-container'>
+            <div className='search-container'>
                 <input
-                    className='add-todo-input'
+                    className='search-input'
                     type='text'
                     value={newSearch}
                     onChange={onInputChange}
                     placeholder='Search'
                 />
-                <button className='add-todo-button' onClick={searchMovies}>
+                <button className='search-button' onClick={searchMovies}>
                     Search
                 </button>
             </div>
@@ -67,9 +84,15 @@ const App = () => {
                             <p className='movie-title'>{movie.Title}</p>
                             <p className='movie-type'>{movie.Type}</p>
                         </div>
-                        <button className='favorite-button'>★</button>
+                        <button
+                            className='favorite-button'
+                            onClick={() => favoriteTheMovie(index)}
+                        >
+                            ★
+                        </button>
                     </div>
                 ))}
+                {favoriteMovies.map((favoriteMovie) => favoriteMovie.Title)}
             </div>
         </div>
     );
