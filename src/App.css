@@ -20,6 +20,7 @@
 .search-input,
 .search-button {
     max-height: 30px;
+    border: none;
 }
 
 .search-input {
@@ -30,8 +31,11 @@
 }
 
 .search-button {
+    width: 30px;
+    padding: 4px 2px 2px 4px;
     cursor: pointer;
     border-radius: 6px;
+    align-items: center;
 }
 
 .movies-container {
