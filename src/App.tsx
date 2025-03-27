@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import './App.css';
 import axios from 'axios';
+import { useMoviesContext } from './MoviesContext';
 
-interface Movie {
+export interface Movie {
     Poster: string;
     Title: string;
     Type: string;
@@ -11,11 +12,15 @@ interface Movie {
 }
 
 const App = () => {
-    const apiKey: string = '';
+    const apiKey: string = import.meta.env.VITE_API_KEY;
 
-    const [movies, setMovies] = useState<Movie[]>([]);
-    const [favoriteMovies, setFavoriteMovies] = useState<Movie[]>([]);
+    // Destructure from context
+    const { movies, favoriteMovies, setMovies, setFavoriteMovies } =
+        useMoviesContext();
+
     const [newSearch, setNewSearch] = useState<string>('');
+    const [lastSearch, setLastSearch] = useState<string>('');
+    const [noResultsFound, setNoResultsFound] = useState<boolean>(false);
 
     const fetchMovies = async (query: string) => {
         try {
@@ -23,10 +28,12 @@ const App = () => {
                 `http://www.omdbapi.com/?s=${query}&apikey=${apiKey}`
             );
             if (response.data && response.data.Search) {
+                // Save movies to context
                 setMovies(response.data.Search);
-                console.log(response);
+                setNoResultsFound(false);
             } else {
                 setMovies([]);
+                setNoResultsFound(true);
             }
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -37,7 +44,14 @@ const App = () => {
         setNewSearch(e.target.value);
     };
 
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            searchMovies();
+        }
+    };
+
     const searchMovies = () => {
+        setLastSearch(newSearch);
         fetchMovies(newSearch);
     };
 
@@ -48,10 +62,7 @@ const App = () => {
         );
 
         if (!alreadyFavorited) {
-            setFavoriteMovies((prevFavorites) => [
-                ...prevFavorites,
-                selectedMovie,
-            ]);
+            setFavoriteMovies([...favoriteMovies, selectedMovie]);
         } else {
             console.log('Movie already in favorites');
         }
@@ -64,34 +75,43 @@ const App = () => {
                     className='search-input'
                     type='text'
                     value={newSearch}
+                    onKeyDown={handleKeyPress}
                     onChange={onInputChange}
                     placeholder='Search'
                 />
                 <button className='search-button' onClick={searchMovies}>
-                    Search
+                    🔍
                 </button>
             </div>
             <div className='movies-container'>
-                {movies.map((movie, index) => (
-                    <div className='movie-card' key={index}>
-                        <div className='movie-poster-container'>
-                            <img
-                                className='movie-poster-image'
-                                src={movie.Poster}
-                            ></img>
-                        </div>
-                        <div className='movie-details'>
-                            <p className='movie-title'>{movie.Title}</p>
-                            <p className='movie-type'>{movie.Type}</p>
-                        </div>
-                        <button
-                            className='favorite-button'
-                            onClick={() => favoriteTheMovie(index)}
-                        >
-                            ★
-                        </button>
-                    </div>
-                ))}
+                {noResultsFound ? (
+                    <h3>No results found for {lastSearch}</h3>
+                ) : (
+                    <>
+                        {movies.map((movie, index) => (
+                            <div className='movie-card' key={index}>
+                                <div className='movie-poster-container'>
+                                    <img
+                                        className='movie-poster-image'
+                                        src={movie.Poster}
+                                        alt={movie.Title}
+                                    />
+                                </div>
+                                <div className='movie-details'>
+                                    <p className='movie-title'>{movie.Title}</p>
+                                    <p className='movie-type'>{movie.Type}</p>
+                                </div>
+                                <button
+                                    className='favorite-button'
+                                    onClick={() => favoriteTheMovie(index)}
+                                >
+                                    ★
+                                </button>
+                            </div>
+                        ))}
+                    </>
+                )}
+
                 {favoriteMovies.map((favoriteMovie) => favoriteMovie.Title)}
             </div>
         </div>
