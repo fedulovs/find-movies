@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
-import { useDrag, useDrop } from 'react-dnd';
+import React, { useState } from 'react';
 import './App.css';
 import axios from 'axios';
 import { useMoviesContext } from './MoviesContext';
+import MovieCard from './components/MovieCard';
 
 export interface Movie {
     Poster: string;
@@ -12,62 +12,12 @@ export interface Movie {
     imdbID: string;
 }
 
-const ItemTypes = {
-    MOVIE: 'movie',
-};
-
-interface DraggableMovieProps {
-    movie: Movie;
-    index: number;
-    moveMovie: (fromIndex: number, toIndex: number) => void;
-}
-
-const DraggableMovie: React.FC<DraggableMovieProps> = ({
-    movie,
-    index,
-    moveMovie,
-}) => {
-    const ref = useRef<HTMLDivElement>(null);
-
-    const [, drag] = useDrag({
-        type: ItemTypes.MOVIE,
-        item: { index },
-    });
-
-    const [, drop] = useDrop({
-        accept: ItemTypes.MOVIE,
-        hover: (item: { index: number }) => {
-            if (item.index !== index) {
-                moveMovie(item.index, index);
-                item.index = index;
-            }
-        },
-    });
-
-    drag(drop(ref));
-
-    return (
-        <div ref={ref} className='movie-card'>
-            <div className='movie-poster-container'>
-                <img
-                    className='movie-poster-image'
-                    src={movie.Poster}
-                    alt={movie.Title}
-                />
-            </div>
-            <div className='movie-details'>
-                <p className='movie-title'>{movie.Title}</p>
-                <p className='movie-type'>{movie.Type}</p>
-            </div>
-        </div>
-    );
-};
-
 const App: React.FC = () => {
     const apiKey: string = import.meta.env.VITE_API_KEY;
     const { movies, setMovies } = useMoviesContext();
     const [newSearch, setNewSearch] = useState<string>('');
     const [lastSearch, setLastSearch] = useState<string>('');
+    const [requestError, setRequestError] = useState<boolean>(false);
     const [noResultsFound, setNoResultsFound] = useState<boolean>(false);
 
     const fetchMovies = async (query: string) => {
@@ -78,11 +28,14 @@ const App: React.FC = () => {
             if (response.data && response.data.Search) {
                 setMovies(response.data.Search);
                 setNoResultsFound(false);
+                setRequestError(false);
             } else {
+                setLastSearch(newSearch);
                 setMovies([]);
                 setNoResultsFound(true);
             }
         } catch (error) {
+            setRequestError(true);
             console.error('Error fetching data:', error);
         }
     };
@@ -98,7 +51,6 @@ const App: React.FC = () => {
     };
 
     const searchMovies = () => {
-        setLastSearch(newSearch);
         fetchMovies(newSearch);
     };
 
@@ -125,11 +77,13 @@ const App: React.FC = () => {
                 </button>
             </div>
             <div className='movies-container'>
-                {noResultsFound ? (
+                {requestError ? (
+                    <h3>Something went wrong</h3>
+                ) : noResultsFound ? (
                     <h3>No results found for {lastSearch}</h3>
                 ) : (
                     movies.map((movie, index) => (
-                        <DraggableMovie
+                        <MovieCard
                             key={movie.imdbID}
                             movie={movie}
                             index={index}
