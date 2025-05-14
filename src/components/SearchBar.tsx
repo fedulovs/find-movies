@@ -53,9 +53,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onResult }) => {
 
     const { setMovies } = useMoviesContext();
     const [newSearch, setNewSearch] = useState<string>('');
-    const [requestError, setRequestError] = useState<boolean>(false);
-    const [lastSearch, setLastSearch] = useState<string>('');
-    const [noResultsFound, setNoResultsFound] = useState<boolean>(false);
+    const [, setRequestError] = useState<boolean>(false);
+    const [, setLastSearch] = useState<string>('');
+    const [, setNoResultsFound] = useState<boolean>(false);
 
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -85,6 +85,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onResult }) => {
                 setRequestError(false);
                 onResult?.(false, query);
             }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             setRequestError(true);
             setNoResultsFound(false);
