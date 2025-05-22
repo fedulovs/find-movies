@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useMoviesContext } from '../MoviesContext';
 import MovieCard from '../components/MovieCard';
@@ -39,12 +39,16 @@ const SearchPage: React.FC = () => {
         setNoResultsFound(!found && last !== '');
         setLastSearch(last);
     };
-    const moveMovie = (fromIndex: number, toIndex: number) => {
-        const updatedMovies = [...movies];
-        const [movedMovie] = updatedMovies.splice(fromIndex, 1);
-        updatedMovies.splice(toIndex, 0, movedMovie);
-        setMovies(updatedMovies);
-    };
+
+    const moveMovie = useCallback(
+        (fromIndex: number, toIndex: number) => {
+            const updatedMovies = [...movies];
+            const [movedMovie] = updatedMovies.splice(fromIndex, 1);
+            updatedMovies.splice(toIndex, 0, movedMovie);
+            setMovies(updatedMovies);
+        },
+        [movies, setMovies]
+    );
 
     return (
         <PageContainer>
