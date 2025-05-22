@@ -3,7 +3,7 @@ import { GlobalStyle } from './styles';
 import SearchPage from './pages/SearchPage';
 import MoviePage from './pages/MoviePage';
 
-function App() {
+const App = () => {
     return (
         <>
             <GlobalStyle />
@@ -15,6 +15,6 @@ function App() {
             </BrowserRouter>
         </>
     );
-}
+};
 
 export default App;
