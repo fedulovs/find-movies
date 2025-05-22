@@ -5,7 +5,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import MoviePage from './MoviePage';
 import axios from 'axios';
 
-// Unit test
+// #region Unit test
 vi.mock('../context/MoviesContext', () => ({
     useMoviesContext: () => ({
         movies: [],
@@ -35,8 +35,9 @@ test('shows "No results found" when appropriate', async () => {
         await screen.findByText('No results found for test response')
     ).toBeInTheDocument();
 });
+// #endregion
 
-// Integration test
+// #region Integration tests
 
 // Mock axios for all tests in this file
 vi.mock('axios');
@@ -129,3 +130,4 @@ test('renders network failure message when axios throws', async () => {
         await screen.findByText('Failed to fetch movie!')
     ).toBeInTheDocument();
 });
+// #endregion
