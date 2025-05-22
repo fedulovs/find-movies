@@ -2,33 +2,37 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import {
-    colors,
-    FullPage,
-    GlobalStyle,
-    TopBar,
-    BackButton,
-    Card,
-    CenterBox,
-} from '../styles';
+import { colors, GlobalStyle } from '../styles';
 
-interface MovieType {
-    Poster: string;
-    Title: string;
-    Year: string;
-    Genre: string;
-    Director: string;
-    Actors: string;
-    Plot: string;
-    imdbID: string;
-    Runtime: string;
-    Rated: string;
-    Released: string;
-    [key: string]: unknown;
-}
+const PageContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw;
+    background: ${colors.container};
+`;
+
+const MovieDetailCard = styled.div`
+    display: flex;
+    gap: 2rem;
+    background-color: ${colors.card};
+    border-radius: 10px;
+    box-shadow: 0 2px 8px #23223950;
+    padding: 2rem 2.5rem;
+    margin-top: 2.5rem;
+    max-width: 900px;
+    width: 94vw;
+
+    @media (max-width: 700px) {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem 0.5rem;
+        align-items: center;
+    }
+`;
 
 const PosterContainer = styled.div`
-    flex-shrink: 0;
     min-width: 230px;
     width: 300px;
     max-width: 300px;
@@ -93,7 +97,53 @@ const Plot = styled.p`
     line-height: 1.7;
 `;
 
-const Movie: React.FC = () => {
+const TopBar = styled.div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    max-width: 900px;
+    margin-top: 2.2rem;
+`;
+
+const SimpleBackButton = styled.button`
+    background: transparent;
+    color: ${colors.fontPrimary};
+    border: none;
+    font-size: 1.04rem;
+    cursor: pointer;
+    padding: 0.1em 0.8em 0.1em 0.2em;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: color 0.18s;
+    &:hover {
+        color: ${colors.fontActive};
+        background: #23223930;
+    }
+`;
+
+const CenteredContent = styled(Content)`
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 30vh;
+`;
+
+interface MovieType {
+    Poster: string;
+    Title: string;
+    Year: string;
+    Genre: string;
+    Director: string;
+    Actors: string;
+    Plot: string;
+    imdbID: string;
+    Runtime: string;
+    Rated: string;
+    Released: string;
+    [key: string]: unknown;
+}
+
+const MoviePage: React.FC = () => {
     const { imdbID } = useParams<{ imdbID: string }>();
     const [movie, setMovie] = useState<MovieType | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -123,60 +173,61 @@ const Movie: React.FC = () => {
     return (
         <>
             <GlobalStyle />
-            <FullPage>
+            <PageContainer>
                 <TopBar>
-                    <BackButton onClick={() => navigate(-1)}>
+                    <SimpleBackButton
+                        type='button'
+                        onClick={() => navigate(-1)}
+                    >
                         &larr; Back
-                    </BackButton>
+                    </SimpleBackButton>
                 </TopBar>
-                <CenterBox>
-                    {error ? (
+                {error ? (
+                    <CenteredContent>
+                        <h3>{error}</h3>
+                    </CenteredContent>
+                ) : !movie ? (
+                    <CenteredContent>Loading...</CenteredContent>
+                ) : (
+                    <MovieDetailCard>
+                        <PosterContainer>
+                            <img
+                                src={
+                                    movie.Poster !== 'N/A'
+                                        ? movie.Poster
+                                        : 'https://via.placeholder.com/300x450?text=No+Image'
+                                }
+                                alt={movie.Title}
+                            />
+                        </PosterContainer>
                         <Content>
-                            <h3>{error}</h3>
+                            <Title>{movie.Title}</Title>
+                            <Details>
+                                <div>
+                                    <span>Year:</span> {movie.Year} &bull;{' '}
+                                    <span>Rated:</span> {movie.Rated} &bull;{' '}
+                                    <span>Runtime:</span> {movie.Runtime}
+                                </div>
+                                <div>
+                                    <span>Genre:</span> {movie.Genre}
+                                </div>
+                                <div>
+                                    <span>Director:</span> {movie.Director}
+                                </div>
+                                <div>
+                                    <span>Actors:</span> {movie.Actors}
+                                </div>
+                                <div>
+                                    <span>Released:</span> {movie.Released}
+                                </div>
+                            </Details>
+                            <Plot>{movie.Plot}</Plot>
                         </Content>
-                    ) : !movie ? (
-                        <Content>Loading...</Content>
-                    ) : (
-                        <Card>
-                            <PosterContainer>
-                                <img
-                                    src={
-                                        movie.Poster !== 'N/A'
-                                            ? movie.Poster
-                                            : 'https://via.placeholder.com/300x450?text=No+Image'
-                                    }
-                                    alt={movie.Title}
-                                />
-                            </PosterContainer>
-                            <Content>
-                                <Title>{movie.Title}</Title>
-                                <Details>
-                                    <div>
-                                        <span>Year:</span> {movie.Year} &bull;{' '}
-                                        <span>Rated:</span> {movie.Rated} &bull;{' '}
-                                        <span>Runtime:</span> {movie.Runtime}
-                                    </div>
-                                    <div>
-                                        <span>Genre:</span> {movie.Genre}
-                                    </div>
-                                    <div>
-                                        <span>Director:</span> {movie.Director}
-                                    </div>
-                                    <div>
-                                        <span>Actors:</span> {movie.Actors}
-                                    </div>
-                                    <div>
-                                        <span>Released:</span> {movie.Released}
-                                    </div>
-                                </Details>
-                                <Plot>{movie.Plot}</Plot>
-                            </Content>
-                        </Card>
-                    )}
-                </CenterBox>
-            </FullPage>
+                    </MovieDetailCard>
+                )}
+            </PageContainer>
         </>
     );
 };
 
-export default Movie;
+export default MoviePage;

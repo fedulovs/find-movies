@@ -58,7 +58,7 @@ const MovieType = styled.span`
     font-size: 0.96em;
 `;
 
-interface Movie {
+export interface Movie {
     Poster: string;
     Title: string;
     Type: string;
@@ -71,53 +71,55 @@ interface MovieCardProps {
     moveMovie?: (fromIndex: number, toIndex: number) => void;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ movie, index, moveMovie }) => {
-    const navigate = useNavigate();
-    const [isDragging, setIsDragging] = useState(false);
+const MovieCard: React.FC<MovieCardProps> = React.memo(
+    ({ movie, index, moveMovie }) => {
+        const navigate = useNavigate();
+        const [isDragging, setIsDragging] = useState(false);
 
-    const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-        setIsDragging(true);
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('movieIndex', String(index));
-    };
-    const handleDragEnd = () => setIsDragging(false);
-    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-    };
-    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        setIsDragging(false);
-        if (!moveMovie) return;
-        const fromIndex = Number(e.dataTransfer.getData('movieIndex'));
-        if (fromIndex !== index) moveMovie(fromIndex, index);
-    };
-    const handleClick = () => {
-        if (!isDragging) {
-            navigate(`/movie/${movie.imdbID}`);
-        }
-    };
+        const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+            setIsDragging(true);
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('movieIndex', String(index));
+        };
+        const handleDragEnd = () => setIsDragging(false);
+        const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+            e.preventDefault();
+        };
+        const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+            e.preventDefault();
+            setIsDragging(false);
+            if (!moveMovie) return;
+            const fromIndex = Number(e.dataTransfer.getData('movieIndex'));
+            if (fromIndex !== index) moveMovie(fromIndex, index);
+        };
+        const handleClick = () => {
+            if (!isDragging) {
+                navigate(`/movie/${movie.imdbID}`);
+            }
+        };
 
-    return (
-        <MovieCardWrapper
-            className={isDragging ? 'dragging' : ''}
-            onClick={handleClick}
-            draggable={!!moveMovie}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-        >
-            <MoviePosterContainer>
-                <MoviePosterImage src={movie.Poster} alt={movie.Title} />
-            </MoviePosterContainer>
-            <MovieDetails>
-                <MovieTitle>{movie.Title}</MovieTitle>
-                <MovieType>
-                    {movie.Type} &bull; {movie.Year}
-                </MovieType>
-            </MovieDetails>
-        </MovieCardWrapper>
-    );
-};
+        return (
+            <MovieCardWrapper
+                className={isDragging ? 'dragging' : ''}
+                onClick={handleClick}
+                draggable={!!moveMovie}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+            >
+                <MoviePosterContainer>
+                    <MoviePosterImage src={movie.Poster} alt={movie.Title} />
+                </MoviePosterContainer>
+                <MovieDetails>
+                    <MovieTitle>{movie.Title}</MovieTitle>
+                    <MovieType>
+                        {movie.Type} &bull; {movie.Year}
+                    </MovieType>
+                </MovieDetails>
+            </MovieCardWrapper>
+        );
+    }
+);
 
 export default MovieCard;
